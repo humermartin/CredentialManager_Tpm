@@ -1,0 +1,40 @@
+USE [CredentialManagerTpm]
+GO
+
+/****** Object:  Table [dbo].[Principals]    Script Date: 08.09.2025 10:47:33 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[Principals](
+	[Id] [uniqueidentifier] ROWGUIDCOL  NOT NULL,
+	[UserName] [nvarchar](256) NOT NULL,
+	[RoleId] [uniqueidentifier] NOT NULL,
+	[Active] [bit] NOT NULL,
+	[CreateTime] [datetime] NOT NULL,
+ CONSTRAINT [PK_dbo.Principals] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[Principals] ADD  CONSTRAINT [DF_Principals_Id]  DEFAULT (newid()) FOR [Id]
+GO
+
+ALTER TABLE [dbo].[Principals] ADD  DEFAULT ((0)) FOR [Active]
+GO
+
+ALTER TABLE [dbo].[Principals] ADD  DEFAULT (getdate()) FOR [CreateTime]
+GO
+
+ALTER TABLE [dbo].[Principals]  WITH CHECK ADD  CONSTRAINT [FK_Principals_CredentialRole] FOREIGN KEY([RoleId])
+REFERENCES [dbo].[CredentialRole] ([Id])
+GO
+
+ALTER TABLE [dbo].[Principals] CHECK CONSTRAINT [FK_Principals_CredentialRole]
+GO
+
+
