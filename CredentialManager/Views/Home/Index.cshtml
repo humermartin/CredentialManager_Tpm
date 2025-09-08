@@ -1,0 +1,18 @@
+﻿@model CredentialManager.ViewModels.CredentialRegisterViewModel
+
+@{
+    ViewBag.Title = "Credential Manager";
+}
+
+<div class="jumbotron">
+    <h1>Credential Store Management</h1>
+    <p class="lead">Create new credential account.</p>
+</div>
+
+@if (User.Identity.IsAuthenticated)
+{
+    <p class="text-success">@ViewBag.StatusMessage</p>
+
+    @Html.Partial("RegisterCredential")
+}
+

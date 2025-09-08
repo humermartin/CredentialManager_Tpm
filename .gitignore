@@ -1,0 +1,14 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs
+/CredentialManager/bin
+/CredentialManager/obj/Debug
+/packages
+/CredentialManager/obj
+Release
+/CredentialManager/obj/Release/edmxResourcesToEmbed
+/CredentialManager/Web.Debug.config
+/CredentialManager/Web.Release.config
+/CredentialManager/web.config

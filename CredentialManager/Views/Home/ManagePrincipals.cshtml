@@ -1,0 +1,126 @@
+﻿@model CredentialManager.ViewModels.PrincipalViewModel
+
+@{
+    ViewBag.Title = "Principals";
+}
+
+<h2>Manage</h2>
+
+<div class="form-horizontal">
+    @Html.AntiForgeryToken()
+
+    <h4>PAS - Principal Account Settings</h4>
+    <hr />
+
+    <span class="text-danger" id="validateAdUserMessage"></span>
+    <br />
+    <br />
+
+    <div class="form-group" id="fldPrincipals" style="margin-left: 1px;">
+
+        <div id="addAdUserSection">
+            <div class="input-group input-group-sm" style="width: 550px; margin-bottom: 5px; float: left;">
+                <span class="input-group-addon" style="width: 30%">AD User</span>
+                <input id="adUserName" runat="server" type="text" class="form-control" placeholder="UID without Domain" aria-describedby="sizing-addon3" />
+                <button id="btnSearchAdUser" type="button" class="btn btn-success btn-sm" onclick="SearchAdUser()"><span style="color: white">Search</span></button>
+            </div>
+            <div class="clearfix"></div>
+            <br />
+
+            <div class="input-group input-group-sm" style="width: 550px; margin-bottom: 5px; float: left;">
+                <span class="input-group-addon" style="width: 30%">AD User</span>
+                <input id="idSamAccountname" type="text" class="form-control" aria-describedby="sizing-addon3" disabled="disabled" />
+            </div>
+            <div class="clearfix"></div>
+
+            <div class="input-group input-group-sm" style="width: 550px; margin-bottom: 5px; float: left;">
+                <span class="input-group-addon" style="width: 30%">Firstname</span>
+                <input id="idFirstName" type="text" class="form-control" aria-describedby="sizing-addon3" disabled="disabled" />
+            </div>
+            <div class="clearfix"></div>
+
+            <div class="input-group input-group-sm" style="width: 550px; margin-bottom: 5px; float: left;">
+                <span class="input-group-addon" style="width: 30%">Lastname</span>
+                <input id="idLastName" type="text" class="form-control" aria-describedby="sizing-addon3" disabled="disabled" />
+            </div>
+            <div class="clearfix"></div>
+
+            <div class="input-group input-group-sm" style="width: 550px; margin-bottom: 5px; float: left;">
+                <span class="input-group-addon" style="width: 30%">Role</span>
+                @Html.DropDownListFor(model => model.CredentialRole, Model.CredentialRoles, "",
+                    new
+                    {
+                        @class = "form-control",
+                        @id = "idCredRoles"
+                    })
+            </div>
+            <div class="clearfix"></div>
+
+            <div class="clearfix"></div>
+
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input id="btnRegisterAdUser" type="submit" class="btn btn-default" value="Register" disabled="disabled" onclick="AddAdUser()" />
+        </div>
+    </div>
+
+    <br />
+    <hr />
+    <br />
+
+    <h4>Assigned AD Users</h4>
+    <hr />
+    <span class="text-danger" id="validateAdUserListMessage"></span>
+    <br />
+    <br />
+    <div class="form-group" id="fldPrincipalList" style="margin-left: 10px;">
+        @if (Model != null && Model.Principals.Any())
+        {
+            foreach (var adUserPrincipal in Model.Principals.ToList())
+            {
+                <div class="row">
+                    <div class="input-group input-group-sm @adUserPrincipal.UserName" id="@adUserPrincipal.Id" style="width: 1195px; margin-bottom: 5px; float: left;">
+                        <span class="input-group-addon" style="width: 60px">AD User</span>
+                        <span id="@adUserPrincipal.Id" type="text" class="form-control principalUserName" aria-describedby="sizing-addon3" style="width: 150px; margin-right: 10px;" title="Active Directoy UserName">@adUserPrincipal.UserName<span title="@adUserPrincipal.Title">(@adUserPrincipal.CredentialsAssignedCount)</span></span>
+                        <span class="input-group-addon" style="width: 60px;">Name</span>
+                        <span id="@adUserPrincipal.Id" type="text" class="form-control principalFullName" aria-describedby="sizing-addon3" style="width: 250px; margin-right: 10px;" title="Active Directoy FirstName">@adUserPrincipal.FullName</span>
+                        <span class="input-group-addon" style="width: 60px;">Role</span>
+                        <span id="adUser" type="text" class="form-control" aria-describedby="sizing-addon3" style="width: 140px; margin-right: 10px;">
+                            @Html.DropDownListFor(x => adUserPrincipal.CredentialRole.RoleName, Model.CredentialRoles, adUserPrincipal.CredentialRole.RoleName,
+                                new
+                                {
+                                    @class = "changeAdUserRole",
+                                    @style = "background: transparent; border: none;",
+                                    @title = "Assigned Role",
+                                    @id = @adUserPrincipal.Id
+                                })
+                        </span>
+
+                        <span class="input-group-addon" style="width: 60px;">Active</span>
+                        <span id="adUser" type="text" class="form-control" aria-describedby="sizing-addon3" style="width: 35px; margin-right: 10px;">
+                            @Html.CheckBoxFor(m => adUserPrincipal.Active,
+                                new
+                                {
+                                    @checked = "checked",
+                                    @class = "checkAdUser",
+                                    @title = "Delivers the user activation status",
+                                    @id = @adUserPrincipal.Id
+                                })
+                        </span>
+                        <span class="input-group-addon" style="width: 60px;">Created</span>
+                        <span id="adUser" type="text" class="form-control" aria-describedby="sizing-addon3" style="width: 150px; margin-right: 10px;" title="User was permitted at this time">@adUserPrincipal.CreatedTime</span>
+                        <span type="text" id="@adUserPrincipal.UserName" class="form-control" aria-describedby="sizing-addon3" style="width: 90px; text-align: center;"><span class="removeAdUser" id="@adUserPrincipal.Id" style="color: red;" title="Removes the user from CredentialManager with all credentials from this user except assigned credentials">Remove</span></span>
+                    </div>
+                </div>
+                <br />
+            }
+        }
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
